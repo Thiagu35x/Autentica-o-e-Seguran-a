@@ -31,7 +31,6 @@ Object.keys(models).forEach((key) => {
   }
 });
 
-// Seed nativo executado logo após a sincronização das tabelas
 sequelize.addHook('afterBulkSync', async () => {
   try {
     const userCount = await models.User.count();

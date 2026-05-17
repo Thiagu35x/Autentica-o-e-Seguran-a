@@ -28,7 +28,7 @@ app.use('/messages', messageRoutes);
 
 sequelize.sync({ force: true }).then(() => {
   app.listen(process.env.PORT || 3000, () =>
-    console.log(`Servidor ativo na porta ${process.env.PORT || 3000}`),
+    console.log(`Servidor ativo`),
   );
 }).catch(err => console.log('Erro de banco:', err));
 
