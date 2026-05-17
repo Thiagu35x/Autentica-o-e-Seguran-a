@@ -26,7 +26,8 @@ app.use('/session', sessionRoutes);
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 
-sequelize.sync({ force: true }).then(() => {
+// Deixamos o sync normal sem o "force" para a Vercel não travar o banco
+sequelize.sync().then(() => {
   app.listen(process.env.PORT || 3000, () =>
     console.log(`Servidor ativo`),
   );
