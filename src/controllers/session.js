@@ -7,9 +7,20 @@ const generateAccessToken = (user) => {
   });
 };
 
-// LOGIN
 export const login = async (req, res) => {
   const { username, password } = req.body;
+  
+  // Garantia rápida de seeders direto no fluxo caso o banco esteja limpo
+  try {
+    const userExists = await req.context.models.User.findOne({ where: { username: 'rwieruch' } });
+    if (!userExists) {
+      await req.context.models.User.create({ username: 'rwieruch', password: '123' });
+      await req.context.models.User.create({ username: 'ddavids', password: '456' });
+    }
+  } catch (err) {
+    console.log("Erro ao checar dados iniciais:", err);
+  }
+
   const user = await req.context.models.User.findByLogin(username);
 
   if (!user || !(await user.validatePassword(password))) {
@@ -30,7 +41,6 @@ export const login = async (req, res) => {
   return res.json({ accessToken, refreshToken: opaqueToken });
 };
 
-// REFRESH (Mantém a mesma data de expiração do token original)
 export const refresh = async (req, res) => {
   const { refreshToken } = req.body;
   const storedToken = await req.context.models.RefreshToken.findOne({ where: { token: refreshToken } });
@@ -43,20 +53,19 @@ export const refresh = async (req, res) => {
   const user = await req.context.models.User.findByPk(storedToken.userId);
   const newAccessToken = generateAccessToken(user);
   const newOpaqueToken = crypto.randomBytes(40).toString('hex');
-  const originalExpiration = storedToken.expiresAt; // Armazena a data original
+  const originalExpiration = storedToken.expiresAt;
 
-  await storedToken.destroy(); // Remove o token antigo
+  await storedToken.destroy();
 
   await req.context.models.RefreshToken.create({
     token: newOpaqueToken,
     userId: user.id,
-    expiresAt: originalExpiration, // Salva o novo mantendo o prazo antigo
+    expiresAt: originalExpiration,
   });
 
   return res.json({ accessToken: newAccessToken, refreshToken: newOpaqueToken });
 };
 
-// LOGOUT
 export const logout = async (req, res) => {
   const { refreshToken } = req.body;
   await req.context.models.RefreshToken.destroy({ where: { token: refreshToken } });
