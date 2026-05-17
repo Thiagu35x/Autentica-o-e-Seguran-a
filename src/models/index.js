@@ -31,17 +31,17 @@ Object.keys(models).forEach((key) => {
   }
 });
 
-// Hook de sementes (seed) nativo do Sequelize exigido no item 4
+// Seed nativo executado logo após a sincronização das tabelas
 sequelize.addHook('afterBulkSync', async () => {
   try {
-    const totalUsers = await models.User.count();
-    if (totalUsers === 0) {
+    const userCount = await models.User.count();
+    if (userCount === 0) {
       await models.User.create({ username: 'rwieruch', password: '123' });
       await models.User.create({ username: 'ddavids', password: '456' });
-      console.log('Dados iniciais carregados com sucesso!');
+      console.log('Seed carregado com sucesso!');
     }
   } catch (error) {
-    console.log('Erro ao popular dados iniciais:', error);
+    console.log('Erro ao criar dados iniciais:', error);
   }
 });
 
