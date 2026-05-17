@@ -14,8 +14,7 @@ const getUserModel = (sequelize, DataTypes) => {
   });
 
   User.findByLogin = async function (login) {
-    let user = await User.findOne({ where: { username: login } });
-    return user;
+    return await User.findOne({ where: { username: login } });
   };
 
   User.prototype.validatePassword = async function (password) {
