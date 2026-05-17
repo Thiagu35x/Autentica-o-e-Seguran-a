@@ -10,7 +10,7 @@ const generateAccessToken = (user) => {
 export const login = async (req, res) => {
   const { username, password } = req.body;
   
-  // Garantia rápida de seeders direto no fluxo caso o banco esteja limpo
+  // Cria os usuários direto aqui caso o banco de dados esteja limpo
   try {
     const userExists = await req.context.models.User.findOne({ where: { username: 'rwieruch' } });
     if (!userExists) {
