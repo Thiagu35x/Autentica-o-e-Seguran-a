@@ -26,16 +26,7 @@ app.use('/session', sessionRoutes);
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 
-// Sincroniza e cria os dados iniciais obrigatórios usando o escopo global
-sequelize.sync({ force: true }).then(async () => {
-  try {
-    await models.User.create({ username: 'rwieruch', password: '123' }).catch(()=>{});
-    await models.User.create({ username: 'ddavids', password: '456' }).catch(()=>{});
-    console.log('Banco sincronizado e usuários criados!');
-  } catch (e) {
-    console.log('Erro ao popular dados iniciais.');
-  }
-
+sequelize.sync({ force: true }).then(() => {
   app.listen(process.env.PORT || 3000, () =>
     console.log(`Servidor ativo na porta ${process.env.PORT || 3000}`),
   );
