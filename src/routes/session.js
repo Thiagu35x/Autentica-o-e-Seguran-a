@@ -71,3 +71,10 @@ export const logout = async (req, res) => {
   await req.context.models.RefreshToken.destroy({ where: { token: refreshToken } });
   return res.status(204).send();
 };
+
+import { Router } from 'express';
+const router = Router();
+router.post('/login', login);
+router.post('/refresh', refresh);
+router.delete('/logout', logout);
+export default router;
