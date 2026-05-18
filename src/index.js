@@ -1,21 +1,23 @@
-const getRefreshTokenModel = (sequelize, DataTypes) => {
-  const RefreshToken = sequelize.define('refreshToken', {
-    token: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    expiresAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
+let sequelize;
+if (process.env.DATABASE_URL) {
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // <-- ISSO AQUI EVITA O CRASH NA VERCEL
+      }
+    }
   });
-
-  RefreshToken.associate = (models) => {
-    RefreshToken.belongsTo(models.User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-  };
-
-  return RefreshToken;
-};
-
-export default getRefreshTokenModel;
+} else {
+  // Configuração local (se houver)
+  sequelize = new Sequelize(
+    process.env.DATABASE,
+    process.env.DATABASE_USER,
+    process.env.DATABASE_PASSWORD,
+    {
+      dialect: 'postgres',
+    },
+  );
+}
